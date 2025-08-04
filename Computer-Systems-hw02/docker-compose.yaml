@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  # Сервіс FastAPI застосунку
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      # Змінні середовища для підключення до бази даних (можна також вказати у conf/db.py)
+      DATABASE_URL: postgresql+psycopg2://postgres:567234@db:5432/hw02
+    depends_on:
+      - db
+    # Переконайтеся, що застосунок перезапускається, якщо він виходить з ладу
+    restart: always
+
+  # Сервіс PostgreSQL бази даних
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: hw02
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 567234
+    volumes:
+      # Зберігайте дані бази даних у постійному томі
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  postgres_data:
+    # Використовуйте том для зберігання даних PostgreSQL
+    driver: local
+    driver_opts:
+      type: none
+      device: ./data/postgres
+      o: bind
